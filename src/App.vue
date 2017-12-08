@@ -4,6 +4,7 @@
       <h1>Christmas List Vue-Firebase Application</h1>
     </div>
 
+    <!-- New Member -->
     <div class="panel panel-default">
       <div class="panel-heading">
         <h3>Add Member</h3>
@@ -14,15 +15,17 @@
             <label for="memberName">Name:</label>
             <input type="text" id="memberName" class="form-control" v-model="newMember.name" />
           </div>
-          <div class="form-group">
-            <label for="memberGift">Gift:</label>
-            <input type="text" id="memberGift" class="form-control" v-model="newMember.gift.name" />
+          <div class="form-group" v-for="gift in newMember.gifts">
+            <label>Gift: </label>
+            <input type="text" v-model="gift.name" />
           </div>
+          <button type="button" v-on:click="addGift(gift)"><i class="material-icons">add</i></button>
           <input type="submit" class="btn btn-primary" value="Add Member" />
         </form>
       </div>
     </div>
 
+    <!-- Current Members -->
     <div class="panel panel-default">
       <div class="panel-heading">
         <h3>Members List</h3>
@@ -35,9 +38,6 @@
                 Member
               </th>
               <th>
-                Gifts
-              </th>
-              <th>
                 Delete
               </th>
             </tr>
@@ -48,14 +48,22 @@
                 {{ member.name }}
               </td>
               <td>
-                {{ member.gift.name }}
-              </td>
-              <td>
                 <span class="glyphicon glyphicon-trash" v-on:click="removeMember(member)"></span>
               </td>
             </tr>
           </tbody>
         </table>
+      </div>
+    </div>
+
+    <div class="panel panel-default" v-for="member in member">
+      <div class="panel-heading">{{ member.name }}</div>
+      <div class="panel-body">
+        <!-- <ul>
+          <li v-for="gift in member.gifts">
+            {{ gift.name }}
+          </li>
+        </ul> -->
       </div>
     </div>
 
@@ -92,9 +100,7 @@ export default {
     return {
       newMember: {
         name: '',
-        gift: {
-          name: ''
-        }
+        gifts: []
       }
     }
   },
@@ -102,11 +108,18 @@ export default {
     addMember: function() {
       membersRef.push(this.newMember)
       this.newMember.name = '';
-      this.newMember.gift.name = '';
+      this.newMember.gifts = [];
     },
     removeMember: function(member) {
       membersRef.child(member['.key']).remove();
       toastr.success("Member removed");
+    },
+    addGift: function(gift) {
+      this.newMember.gifts.push({
+        name: '',
+        claimed: false,
+        claimee: "none"
+      })
     }
   }
 }
