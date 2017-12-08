@@ -1,69 +1,124 @@
 <template>
-  <div id="app" class="container">
-    <div class="page-header">
-      <h1>Christmas List Vue-Firebase Application</h1>
-    </div>
-
-    <!-- New Member -->
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3>Add Member</h3>
+  <div id="app" class="wrapper">
+    <div class="sidebar">
+      <div class="logo">
+        <a href="#" class="simple-text">Christmas</a>
       </div>
-      <div class="panel-body">
-        <form id="form" class="form-inline" v-on:submit.prevent="addMember">
-          <div class="form-group">
-            <label for="memberName">Name:</label>
-            <input type="text" id="memberName" class="form-control" v-model="newMember.name" />
-          </div>
-          <div class="form-group" v-for="gift in newMember.gifts">
-            <label>Gift: </label>
-            <input type="text" v-model="gift.name" />
-          </div>
-          <button type="button" v-on:click="addGift(gift)"><i class="material-icons">add</i></button>
-          <input type="submit" class="btn btn-primary" value="Add Member" />
-        </form>
-      </div>
-    </div>
-
-    <!-- Current Members -->
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3>Members List</h3>
-      </div>
-      <div class="panel-body">
-        <table class="table table-striped">
-          <thead>
-            <tr>
-              <th>
-                Member
-              </th>
-              <th>
-                Delete
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="member in members">
-              <td>
-                {{ member.name }}
-              </td>
-              <td>
-                <span class="glyphicon glyphicon-trash" v-on:click="removeMember(member)"></span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <div class="panel panel-default" v-for="member in member">
-      <div class="panel-heading">{{ member.name }}</div>
-      <div class="panel-body">
-        <!-- <ul>
-          <li v-for="gift in member.gifts">
-            {{ gift.name }}
+      <div class="sidebar-wrapper">
+        <ul class="nav">
+          <li v-for="member in members">
+            <a href="#" @click="changeActiveMember(member)"><i class="material-icons">person</i> <p>{{ member.name }}</p></a>
           </li>
-        </ul> -->
+        </ul>
+      </div>
+    </div>
+
+    <div class="main-panel">
+      <div class="content">
+        <div class="container-fluid">
+          <!-- If there is an active member -->
+          <div v-if="activeMember">
+            <h1>{{activeMember.name}} Christmas List</h1>
+            <div class="row">
+              <!-- Active Member Data -->
+              <div class="card">
+                <div class="card-header" data-background-color="green">
+                  <h2>Gifts</h2>
+                </div>
+                <div class="card-content table-responsive">
+                  <table class="table table-hover">
+                    <thead>
+                      <tr>
+                        <td>
+                          Claimed
+                        </td>
+                        <td>
+                          Gift
+                        </td>
+                        <td>
+                          Claimee
+                        </td>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-for="gift in activeMember.gifts">
+                        <td>
+                          <input type="checkbox" v-model="gift.claimed" />
+                        </td>
+                        <td>
+                          {{ gift.name }}
+                        </td>
+                        <td>
+                          <input type="text" v-model="gift.claimee" />
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- If there is no active member -->
+          <div v-if="!activeMember">
+            <div class="jumbotron">
+              <h1>Welcome to the Christmas List app!</h1>
+              <h2>Select someone on the left to see their Christmas list</h2>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- New Member -->
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3>Add Member</h3>
+        </div>
+        <div class="panel-body">
+          <form id="form" class="form-inline" v-on:submit.prevent="addMember">
+            <div class="form-group">
+              <label for="memberName">Name:</label>
+              <input type="text" id="memberName" class="form-control" v-model="newMember.name" />
+            </div>
+            <div class="form-group" v-for="gift in newMember.gifts">
+              <label>Gift: </label>
+              <input type="text" v-model="gift.name" />
+            </div>
+            <button type="button" v-on:click="addGift(gift)"><i class="material-icons">add</i></button>
+            <input type="submit" class="btn btn-primary" value="Add Member" />
+          </form>
+        </div>
+      </div>
+
+      <!-- Current Members -->
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3>Members List</h3>
+        </div>
+        <div class="panel-body">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>
+                  Member
+                </th>
+                <th>
+                  Delete
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="member in members">
+                <td>
+                  {{ member.name }}
+                </td>
+                <td>
+                  <span v-on:click="removeMember(member)"><i class="material-icons">delete</i></span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
 
@@ -101,10 +156,14 @@ export default {
       newMember: {
         name: '',
         gifts: []
-      }
+      },
+      activeMember: null
     }
   },
   methods: {
+    changeActiveMember: function(member) {
+      this.activeMember = member;
+    },
     addMember: function() {
       membersRef.push(this.newMember)
       this.newMember.name = '';
@@ -132,6 +191,6 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   /*text-align: center;*/
   color: #2c3e50;
-  margin-top: 60px;
+  /*margin-top: 60px;*/
 }
 </style>
