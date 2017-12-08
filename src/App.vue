@@ -9,6 +9,9 @@
           <li v-for="member in members">
             <a href="#" @click="changeActiveMember(member)"><i class="material-icons">person</i> <p>{{ member.name }}</p></a>
           </li>
+          <li class="active-pro">
+            <a href="#" @click="showNewMemberModal"><i class="material-icons">person_add</i> New Member</a>
+          </li>
         </ul>
       </div>
     </div>
@@ -55,6 +58,9 @@
                     </tbody>
                   </table>
                 </div>
+                <div class="card-footer">
+                  <button type="button" class="btn btn-success" @click="saveMemberData">Submit</button>
+                </div>
               </div>
             </div>
           </div>
@@ -66,27 +72,23 @@
               <h2>Select someone on the left to see their Christmas list</h2>
             </div>
           </div>
-        </div>
-      </div>
 
-      <!-- New Member -->
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h3>Add Member</h3>
-        </div>
-        <div class="panel-body">
-          <form id="form" class="form-inline" v-on:submit.prevent="addMember">
-            <div class="form-group">
-              <label for="memberName">Name:</label>
-              <input type="text" id="memberName" class="form-control" v-model="newMember.name" />
-            </div>
-            <div class="form-group" v-for="gift in newMember.gifts">
-              <label>Gift: </label>
-              <input type="text" v-model="gift.name" />
-            </div>
-            <button type="button" v-on:click="addGift(gift)"><i class="material-icons">add</i></button>
-            <input type="submit" class="btn btn-primary" value="Add Member" />
-          </form>
+          <!-- New Member Modal -->
+          <sweet-modal title="Add a new family member" ref="newMemberModal">
+            <form id="form" class="form-inline" v-on:submit.prevent="addMember">
+              <div class="form-group">
+                <label for="memberName">Name:</label>
+                <input type="text" id="memberName" class="form-control" v-model="newMember.name" />
+              </div><br />
+              <div class="form-group" v-for="gift in newMember.gifts">
+                <label>Gift: </label>
+                <input type="text" v-model="gift.name" />
+              </div>
+              <button type="button" v-on:click="addGift(gift)"><i class="material-icons">add</i></button>
+              <input type="submit" class="btn btn-primary" value="Add Member" />
+            </form>
+            <sweet-button slot="button">Add</sweet-button>
+          </sweet-modal>
         </div>
       </div>
 
@@ -132,6 +134,8 @@ import Firebase from 'firebase'
 
 import toastr from 'toastr'
 
+import { SweetModal, SweetModalTab } from 'sweet-modal-vue'
+
 let config = {
   apiKey: "AIzaSyCsMmS7TtPL8BHRCQPvfgINmCk3b4KNdrc",
   authDomain: "christmas-a14ca.firebaseapp.com",
@@ -150,6 +154,10 @@ export default {
   name: 'app',
   firebase: {
     members: membersRef
+  },
+  components: {
+    SweetModal,
+    SweetModalTab
   },
   data () {
     return {
@@ -177,8 +185,14 @@ export default {
       this.newMember.gifts.push({
         name: '',
         claimed: false,
-        claimee: "none"
+        claimee: ""
       })
+    },
+    showNewMemberModal: function() {
+      this.$refs.newMemberModal.open()
+    },
+    saveMemberData: function() {
+
     }
   }
 }
