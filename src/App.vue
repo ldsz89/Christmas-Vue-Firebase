@@ -59,7 +59,7 @@
                   </table>
                 </div>
                 <div class="card-footer">
-                  <button type="button" class="btn btn-success" @click="saveMemberData">Submit</button>
+                  <button type="button" class="btn btn-success" @click="saveMemberData(activeMember)">Submit</button>
                 </div>
               </div>
             </div>
@@ -191,8 +191,15 @@ export default {
     showNewMemberModal: function() {
       this.$refs.newMemberModal.open()
     },
-    saveMemberData: function() {
-
+    saveMemberData: function(member) {
+      var data = {
+        name: member.name,
+        gifts: member.gifts
+      };
+      var updates = {};
+      updates[member['.key']] = data;
+      membersRef.update(updates);
+      toastr.success("List update saved");
     }
   }
 }
