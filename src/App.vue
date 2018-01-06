@@ -52,7 +52,7 @@
                           {{ gift.name }}
                         </td>
                         <td>
-                          <input type="text" v-model="gift.claimee" />
+                          <input type="text" v-model="gift.claimee" v-on:change="claimGift(gift)" />
                         </td>
                       </tr>
                     </tbody>
@@ -200,6 +200,14 @@ export default {
       updates[member['.key']] = data;
       membersRef.update(updates);
       toastr.success("List update saved");
+    },
+    claimGift: function(gift) {
+      if(gift.claimee != "") {
+        gift.claimed = true;
+      }
+      else {
+        gift.claimed = false;
+      }
     }
   }
 }
